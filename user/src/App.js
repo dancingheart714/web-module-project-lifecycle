@@ -1,12 +1,11 @@
 import React from 'react';
-import react from 'react';
-import axios from 'react-axios';
+import axios from 'axios';
 import './App.css';
 
 class App extends React.Component {
   //#### Fetch the User Data & Set State
   state = {
-    user: '',
+    user: [],
     followers: [],
   };
 
@@ -14,8 +13,21 @@ class App extends React.Component {
     axios
       .get('https://api.github.com/users/dancingheart714')
       .then((resp) => {
+        console.log(resp.data);
         this.setState({
-          user: resp.data.login,
+          user: resp.data,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    axios
+      .get('https://api.github.com/users/dancingheart714/followers')
+      .then((resp) => {
+        console.log(resp.data);
+        this.setState({
+          followers: resp.data,
         });
       })
       .catch((err) => {
@@ -32,11 +44,11 @@ class App extends React.Component {
   //#### Fetch the User's Followers & Set State
   fetchFollowers = () => {
     axios
-      .get('https://api.github.com/users/${this.state.user}/followers')
+      .get('https://api.github.com/users/dancingheart714/followers')
       .then((resp) => {
         console.log(resp);
         this.setState({
-          user: resp.data.login,
+          followers: resp.data,
         });
       })
       .catch((err) => {
@@ -53,17 +65,22 @@ class App extends React.Component {
   //#### Display the User Data
   render() {
     return (
-      <div>
+      <div className="container">
         <h1>Github User Card v.2</h1>
-        <input
-          value={this.state.user}
-          onChange={this.handleChange}
-          placeholder="user"
-        />
-        <button onClick={this.fetchFollowers}>Submit</button>
-        <div>
+        <div className="userContainer">
+          <h1>Name: {this.state.user.name}</h1>
+          <div className="imageContainer">
+            <img src={this.state.user.avatar_url} />
+          </div>
+          <h4>Username: {this.state.user.login}</h4>
+          <h4>Bio: {this.state.user.bio}</h4>
+          <h4>Location: {this.state.user.location}</h4>
+        </div>
+        <div className="followerContainer">
+          <h1>Who I Follow</h1>
           {this.state.followers.map((follower) => {
-            return <h3>{follower.login}</h3>;
+            return <h2>{follower.login}</h2>;
+            <br></br>;
           })}
         </div>
       </div>
